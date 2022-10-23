@@ -12,6 +12,10 @@ h2{
     
 }
 
+h3{
+
+}
+
 a{
 
 }
@@ -20,8 +24,12 @@ p{
 
 }
 
-button{
+li{
 
+}
+
+button{
+    color: white;
 }
 
 nav{
@@ -29,23 +37,27 @@ nav{
 }
 
 .correct-btn{
+    background-color: var(--neutral);
+}
 
+.correct-revealed{
+    background-color: var(--correct);
 }
 
 .incorrect-btn{
-    
+    background-color: var(--neutral);
+}
+
+.incorrect-revealed{
+    background-color: var(--incorrect);
 }
 
 .next-btn{
-
-}
-
-.question-btn{
-
+    background-color: var(--neutral);
 }
 
 .start-btn{
-    
+    background-color: var(--neutral);
 }
 
 .timer{
