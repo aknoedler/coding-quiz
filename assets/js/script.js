@@ -9,6 +9,8 @@ var gameRunning = false;
 var header = document.querySelector('header');
 console.log(header);
 
+// The seven questions are objects with key-value pairs for the question text, the correct answer, and three
+// incorrect answers
 var questionOne = {
     questionText: "Which type of variable can hold a value of 'true' or 'false'?",
     correctAnswer: "Boolean",
@@ -89,6 +91,7 @@ function clearFrame() {
     });
 }
 
+// Clears the stored scores from local storage
 function clearScores() {
     localStorage.setItem('High Scores', JSON.stringify(null));
     displayHighScores();
@@ -200,8 +203,14 @@ function endGame() {
 function startGame() {
     gamePosition = 0;
     gameRunning = true;
+
+    // Disables the High Score button
     highScoresBtn.setAttribute('style', 'color: grey; cursor:default');
+    
+    // Shuffle the order of the questions
     questionArray = shuffle(questionArray);
+
+    // Set up timer
     timerCount = 100;
     timerEl.textContent = "Time: " + timerCount + " sec";
     timerInterval = setInterval(function () {
@@ -293,6 +302,7 @@ function shuffle(array) {
     return shuffledArray;
 }
 
+// Submits the score to local storage when the "submit" button is clicked
 function sumbitScore() {
     var nameInput = document.querySelector('.name-input');
 
@@ -300,13 +310,20 @@ function sumbitScore() {
         storedName: nameInput.value,
         score: score
     }
+
+    // The scores are stured as an array of objects
     var highScores = JSON.parse(localStorage.getItem('High Scores'))
+
+    // Handles if the object has not been stored yet
     if (highScores == null) {
         highScores = [];
     }
 
+    // Adds the new score to the array, then sorts it based on the "score" value stored in the objects
     highScores.push(storedScore);
     highScores.sort(function (a, b) { return b.score - a.score });
+
+    // Stores the new array back in local storage
     localStorage.setItem('High Scores', JSON.stringify(highScores));
 }
 
@@ -330,12 +347,14 @@ frame.addEventListener("click", function (event) {
     }
 });
 
+// Event listener for the High Scores page, doesn't function during the quiz
 highScoresBtn.addEventListener("click", function (event) {
     if (!gameRunning){
         displayHighScores();
     }
 })
 
+// Function for when the screen is first loaded
 function init() {
     var title = document.createElement('h1');
     var description = document.createElement('p');
