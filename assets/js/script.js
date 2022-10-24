@@ -1,64 +1,68 @@
-var frame = document.querySelector('main');
+var frame = document.querySelector('section');
 var gamePosition = 0;
 var timerCount = 100;
 var timerEl = document.querySelector('.timer');
 var timerInterval;
 var score;
+var highScoresBtn = document.querySelector('.high-scores-btn');
+var gameRunning = false;
+var header = document.querySelector('header');
+console.log(header);
 
 var questionOne = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "Which type of variable can hold a value of 'true' or 'false'?",
+    correctAnswer: "Boolean",
+    incorrectOne: "String",
+    incorrectTwo: "Int",
+    incorrectThree: "Array"
 }
 
 var questionTwo = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "Which of these is NOT a semantic HTML tag?",
+    correctAnswer: "<div>",
+    incorrectOne: "<header>",
+    incorrectTwo: "<p>",
+    incorrectThree: "<section>"
 }
 
 var questionThree = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "Which property defines the space between different elements on the page?",
+    correctAnswer: "Margin",
+    incorrectOne: "Padding",
+    incorrectTwo: "Border",
+    incorrectThree: "Display"
 }
 
 var questionFour = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "In JavaScipt, the Math.random() function returns a number...",
+    correctAnswer: "From 0 to 1",
+    incorrectOne: "From 1 to 100",
+    incorrectTwo: "From negative infinity to infinity",
+    incorrectThree: "From -1 to 1"
 }
 
 var questionFive = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "What JSON function converts an object to a string for local storage?",
+    correctAnswer: "stringify",
+    incorrectOne: "convertToString",
+    incorrectTwo: "toString",
+    incorrectThree: "pack"
 }
 
 var questionSix = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "What does the querySelector() function return?",
+    correctAnswer: "Elements",
+    incorrectOne: "Documents",
+    incorrectTwo: "Queries",
+    incorrectThree: "Functions"
 }
 
 var questionSeven = {
-    questionText: "Placeholder question text?",
-    correctAnswer: "Correct answer",
-    incorrectOne: "Incorrect answer",
-    incorrectTwo: "Incorrect answer",
-    incorrectThree: "Incorrect answer"
+    questionText: "Which of these returns false?",
+    correctAnswer: "false === null",
+    incorrectOne: "true != false",
+    incorrectTwo: "2 >= 2",
+    incorrectThree: "!null"
 }
 
 var questionArray = [questionOne, questionTwo, questionThree, questionFour, questionFive, questionSix, questionSeven];
@@ -83,6 +87,11 @@ function clearFrame() {
     frameElements.forEach(element => {
         element.remove();
     });
+}
+
+function clearScores() {
+    localStorage.setItem('High Scores', JSON.stringify(null));
+    displayHighScores();
 }
 
 // Passes in a question object and populates the frame based on that question
@@ -119,40 +128,42 @@ function displayQuestion(question, index) {
 }
 
 // Displays the highscores
-function displayHighScores(){
+function displayHighScores() {
     clearFrame();
     var title = document.createElement('h2');
-    var scoreList =document.createElement('ul');
+    var scoreList = document.createElement('ul');
     var replayBtn = document.createElement('button');
-    var scoreArray = [];
+    var clearBtn = document.createElement('button');
 
-    title.textContent = "High Scores";
     replayBtn.textContent = "Play again";
     replayBtn.setAttribute('class', 'start-btn');
+    clearBtn.textContent = "Clear High Scores";
+    clearBtn.setAttribute('class', 'clear-btn');
 
     frame.appendChild(title);
     frame.appendChild(scoreList);
     frame.appendChild(replayBtn);
+    frame.appendChild(clearBtn);
 
-    // Creates an array of the stored high scores
-    for (i = 1; i <= localStorage.length; i++){
-        var scoreEntry = JSON.parse(localStorage.getItem(i));
-        scoreArray.push(scoreEntry);
-    }
+    var highScores = JSON.parse(localStorage.getItem('High Scores'));
 
-    // Sorts the array based on the score
-    scoreArray.sort(function(a, b){return b.score - a.score});
-
-    for(i = 1; i <= localStorage.length; i++){
-         var listItem = document.createElement('li');
-         listItem.textContent = i + ". " + scoreArray[i].name + " " + scoreArray[i].score;
-         scoreList.appendChild(listItem);
+    if (highScores) {
+        title.textContent = "High Scores";
+        for (i = 1; i <= highScores.length; i++) {
+            var listItem = document.createElement('li');
+            listItem.textContent = i + ". " + highScores[i - 1].storedName + "- " + highScores[i - 1].score + " points";
+            scoreList.appendChild(listItem);
+        }
+    } else {
+        title.textContent = "No high scores to display"
     }
 }
 
 // Stops timer, stores score, displays ending screen
 function endGame() {
     clearFrame();
+    gameRunning = false;
+    highScoresBtn.setAttribute('style', 'color: white; cursor:pointer');
     clearInterval(timerInterval);
     score = timerCount;
 
@@ -188,6 +199,8 @@ function endGame() {
 // Sets up the timer, orders the question, and initiates the first question
 function startGame() {
     gamePosition = 0;
+    gameRunning = true;
+    highScoresBtn.setAttribute('style', 'color: grey; cursor:default');
     questionArray = shuffle(questionArray);
     timerCount = 100;
     timerEl.textContent = "Time: " + timerCount + " sec";
@@ -210,6 +223,9 @@ function correctAnswerSelect() {
 
     var message = document.createElement('h3');
     var nextButton = document.createElement('button');
+
+    header.setAttribute('style','background-color: var(--correct)');
+    frame.setAttribute('style','box-shadow: 0 0 24px var(--correct');
 
     message.textContent = "Correct!"
     nextButton.setAttribute('class', 'next-btn');
@@ -236,6 +252,9 @@ function incorrectAnswerSelect() {
     var message = document.createElement('h3');
     var nextButton = document.createElement('button');
 
+    header.setAttribute('style','background-color: var(--incorrect)');
+    frame.setAttribute('style','box-shadow: 0 0 24px var(--incorrect');
+
     message.textContent = "Incorrect"
     nextButton.setAttribute('class', 'next-btn');
     nextButton.textContent = "Next";
@@ -247,6 +266,10 @@ function incorrectAnswerSelect() {
 //Calls up the next question, or ends the game if the last question has been answered
 function nextScreen() {
     clearFrame();
+
+    header.setAttribute('style','background-color: var(--neutral)');
+    frame.setAttribute('style','box-shadow: none');
+
     if (gamePosition >= questionArray.length) {
         endGame();
     } else {
@@ -270,15 +293,21 @@ function shuffle(array) {
     return shuffledArray;
 }
 
-function submitScore() {
+function sumbitScore() {
     var nameInput = document.querySelector('.name-input');
-    var storedScoreIndex = JSON.stringify(localStorage.length + 1);
+
     var storedScore = {
-        name: nameInput.value.trim(),
+        storedName: nameInput.value,
         score: score
     }
+    var highScores = JSON.parse(localStorage.getItem('High Scores'))
+    if (highScores == null) {
+        highScores = [];
+    }
 
-    localStorage.setItem(storedScoreIndex, JSON.stringify(storedScore));
+    highScores.push(storedScore);
+    highScores.sort(function (a, b) { return b.score - a.score });
+    localStorage.setItem('High Scores', JSON.stringify(highScores));
 }
 
 // Event listener to handle all button clicks within the main frame, actions vary
@@ -292,21 +321,28 @@ frame.addEventListener("click", function (event) {
         incorrectAnswerSelect();
     } else if (event.target.className == 'next-btn') {
         nextScreen();
-    }
-    else if (event.target.className == 'submit-btn') {
-         event.preventDefault();
-         submitScore();
-         displayHighScores();
+    } else if (event.target.className == 'clear-btn') {
+        clearScores();
+    } else if (event.target.className == 'submit-btn') {
+        event.preventDefault();
+        sumbitScore();
+        displayHighScores();
     }
 });
+
+highScoresBtn.addEventListener("click", function (event) {
+    if (!gameRunning){
+        displayHighScores();
+    }
+})
 
 function init() {
     var title = document.createElement('h1');
     var description = document.createElement('p');
     var startButton = document.createElement('button');
 
-    title.textContent = "Title goes here";
-    description.textContent = "Description goes here";
+    title.textContent = "Coding Quiz";
+    description.textContent = "A timed, seven question quiz to test your coding knowledge. The timer starts at 100 seconds; your final score is your remaining time. Each wrong answer subtracts 20 seconds. Press Start to begin!";
     startButton.textContent = "Start";
     startButton.setAttribute('class', 'start-btn');
 
